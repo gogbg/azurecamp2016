@@ -1,16 +1,16 @@
-function Import-CustomModule
+function Import-TemporaryModule
 {
 	[CmdletBinding()]
 	param
 	(
-		[Parameter(Mandatory=$true,ParameterSetName='ByName')]
+		[Parameter(Mandatory=$true,ParameterSetName='RemotingWithSession_ByName')]
 		[string]$Name,
 
-		[Parameter(Mandatory=$true,ParameterSetName='ByPath')]
+		[Parameter(Mandatory=$true,ParameterSetName='RemotingWithSession_ByPath')]
 		[string]$Path,
 
-		[Parameter(Mandatory=$true,ParameterSetName='ByPath')]
-		[Parameter(Mandatory=$true,ParameterSetName='ByName')]
+		[Parameter(Mandatory=$true,ParameterSetName='RemotingWithSession_ByPath')]
+		[Parameter(Mandatory=$true,ParameterSetName='RemotingWithSession_ByName')]
 		[System.Management.Automation.Runspaces.PSSession]$PSSession
 	)
 
@@ -21,7 +21,7 @@ function Import-CustomModule
 
 	process
 	{
-		#Get Module Definition
+		#Check if Module exists and get it`s definition
 		if ($PSBoundParameters.ContainsKey('Name'))
 		{
 			$mod = Get-Module -Name $Name -ErrorAction Stop
@@ -33,8 +33,6 @@ function Import-CustomModule
 			{
 				throw "Module: $Name not found"
 			}
-
-
 		}
 		elseif ($PSBoundParameters.ContainsKey('Path'))
 		{
@@ -49,6 +47,7 @@ function Import-CustomModule
 			}
 		}
 
+		#Transfer and import in the remote sessions
 		try
 		{
 			Invoke-Command -Session $PSSession -ScriptBlock {

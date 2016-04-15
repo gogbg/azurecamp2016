@@ -1060,4 +1060,9 @@ New-Alias -Name dppv -Value Disable-Privilege
 Update-FormatData "$ScriptPath\TypeData\PoShPrivilege.Format.ps1xml"
 #endregion Load Type and Format Files
 
-Export-ModuleMember -Alias * -Function '*-Privilege'
+function Initialize-PoshPrivilege
+{
+    
+}
+
+Export-ModuleMember -Alias * -Function '*-Privilege',Initialize-PoshPrivilege

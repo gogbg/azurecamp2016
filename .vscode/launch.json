@@ -1,0 +1,11 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Get-ServerInfo",
+            "type": "PowerShell",
+            "request": "launch",
+			"program": "${workspaceRoot}/Get-ServerInfo.ps1"
+		}
+	]
+}
