@@ -8,35 +8,24 @@ Workflow Get-ServerInfo
         [ValidateSet('SOF','BES')]
         [string]$Location
     )
-    
-    begin
+
+    Initialize-PoshPrivilege
+
+    if ($Location -eq 'SOF')
     {
-        Initialize-PoshPrivilege
+        $Creds = Get-AutomationPsCredential -Name 'SofCredentials'
+    }
+    elseif ($Location -eq 'BES')
+    {
+        $Creds = Get-AutomationPsCredential -Name 'BesCredentials'
+    }
+    else
+    {
+        throw 'Unknown Location'
     }
     
-    process
-    {
-        if ($Location -eq 'SOF')
-        {
-            $Creds = Get-AutomationPsCredential -Name 'SofCredentials'
-        }
-        elseif ($Location -eq 'BES')
-        {
-            $Creds = Get-AutomationPsCredential -Name 'BesCredentials'
-        }
-        else
-        {
-            throw 'Unknown Location'
-        }
-        
-        #Execute Get-ServerInfoActivity
-        Get-ServerInfoActivity -ComputerName $ServerName -Credential $creds
-        
-    }
+    #Execute Get-ServerInfoActivity
+    Get-ServerInfoActivity -ComputerName $ServerName -Credential $creds
     
-    end
-    {
-        
-    }
     
 }
