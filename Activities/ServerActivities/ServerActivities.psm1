@@ -76,24 +76,6 @@ function Get-ServerInfoActivitiy
                 }
             }
             
-            #Transfer Module
-            try
-            {
-                Write-Progress "Transfer Module:$RequiredModules started"
-                
-                $null = Import-TemporaryModule -Name $RequiredModules -PSSession $tempses -ErrorAction Stop
-                
-                Write-Progress "Transfer Module:$RequiredModules finished"
-            }
-            catch
-            {
-                Write-ActivityError -Exeption "Transfer Module:$RequiredModules failed. Details: $_." `
-                                    -Categoty NotSpecified `
-                                    -ErrorId 0 `
-                                    -TargetObject $ActivityName `
-                                    -ErrorAction 'Stop'
-            }
-            
             #Retrieve Computer Information
             try
             {
@@ -102,7 +84,7 @@ function Get-ServerInfoActivitiy
                 Invoke-Command -PSSession $tempses -ScriptBlock {
                     [pscustomobject]@{
                         Computer=$Env:ComputerName
-                        Privileges=(Get-Privilege | select -expandproperty Privilege,Accounts)
+                        Services=(Get-Serice)
                     }
                 } -ErrorAction Stop
                 

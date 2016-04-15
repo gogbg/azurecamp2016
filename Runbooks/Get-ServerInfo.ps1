@@ -9,8 +9,6 @@ Workflow Get-ServerInfo
         [string]$Location
     )
 
-    Initialize-PoshPrivilege
-
     if ($Location -eq 'SOF')
     {
         $Creds = Get-AutomationPsCredential -Name 'SofCredentials'
