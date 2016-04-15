@@ -3,11 +3,19 @@ function Get-ServerInfoActivitiy
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true,ParameterSetName='Azure')]
+        [Parameter(Mandatory=$true,ParameterSetName='OnPremise')]
         [string[]]$ComputerName,
         
-        [Parameter(Mandatory=$true)]
-        [pscredential]$Credential
+        [Parameter(Mandatory=$true,ParameterSetName='Azure')]
+        [Parameter(Mandatory=$true,ParameterSetName='OnPremise')]
+        [pscredential]$Credential,
+        
+        [Parameter(Mandatory=$true,ParameterSetName='Azure')]
+        [switch]$Azure,
+        
+        [Parameter(Mandatory=$true,ParameterSetName='Azure')]
+        [string]$ResourceGroupName
     )
     
     begin
@@ -25,21 +33,47 @@ function Get-ServerInfoActivitiy
         foreach ($Computer in $ComputerName)
         {
             #Connect to Computer
-            try
+            if ($PSCmdlet.ParameterSetName -eq 'Azure')
             {
-                Write-Progress "Connect to Computer:$Computer started"
-                
-                $tempses = New-PSSession -ComputerName $Computer -Credential $Credential -ErrorAction Stop
-                
-                Write-Progress "Connect to Computer:$Computer finished"
+                try
+                {
+                    Write-Progress "Connect to Computer:$Computer started"
+                    
+                    Write-Progress "Connect to Computer:$Computer in progress. Retrieve AzureVm"
+                    
+                    
+                    
+                    $tempses = New-PSSession -ComputerName $Computer -Credential $Credential -ErrorAction Stop
+                    
+                    Write-Progress "Connect to Computer:$Computer finished"
+                }
+                catch
+                {
+                    Write-ActivityError -Exeption "Connect to Computer:$Computer failed. Details: $_." `
+                                        -Categoty NotSpecified `
+                                        -ErrorId 0 `
+                                        -TargetObject $ActivityName `
+                                        -ErrorAction 'Stop'
+                }
             }
-            catch
+            else
             {
-                Write-ActivityError -Exeption "Connect to Computer:$Computer failed. Details: $_." `
-                                    -Categoty NotSpecified `
-                                    -ErrorId 0 `
-                                    -TargetObject $ActivityName `
-                                    -ErrorAction 'Stop'
+                try
+                {
+                    Write-Progress "Connect to Computer:$Computer started"
+                    
+                    $tempses = New-PSSession -ComputerName $Computer -Credential $Credential -ErrorAction Stop
+                    
+                    Write-Progress "Connect to Computer:$Computer finished"
+                }
+                catch
+                {
+                    Write-ActivityError -Exeption "Connect to Computer:$Computer failed. Details: $_." `
+                                        -Categoty NotSpecified `
+                                        -ErrorId 0 `
+                                        -TargetObject $ActivityName `
+                                        -ErrorAction 'Stop'
+                }
             }
             
             #Transfer Module
